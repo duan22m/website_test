@@ -1,0 +1,4 @@
+cd /Users/muchangduan/documents/website_html
+python -m http.server
+
+Access the website at http://localhost:8000 in your web browser.

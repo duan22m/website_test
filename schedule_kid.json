@@ -1,0 +1,6 @@
+[
+    { "day": "Saturday", "time": "10:00 AM - 12:00 PM", "course": "Samba", "difficulty": "Intro", "syllabusPage": "syllabus_rumba_intro.html", "startDate": "2024-06-08", "endDate": "2024-08-03", "location": "Newton" },
+    { "day": "Saturday", "time": "2:00 PM - 4:00 PM", "course": "Samba", "difficulty": "Intermediate", "syllabusPage": "syllabus_rumba_intermediate.html", "startDate": "2024-06-08", "endDate": "2024-08-03", "location": "Newton" },
+    { "day": "Sunday", "time": "10:00 AM - 12:00 PM", "course": "Cha Cha", "difficulty": "Intro", "syllabusPage": "syllabus_salsa_intro.html", "startDate": "2024-06-09", "endDate": "2024-08-04", "location": "Brighton" },
+    { "day": "Sunday", "time": "2:00 PM - 4:00 PM", "course": "Cha Cha", "difficulty": "Intermediate", "syllabusPage": "syllabus_salsa_intermediate.html", "startDate": "2024-06-09", "endDate": "2024-08-04", "location": "Brighton" }
+]

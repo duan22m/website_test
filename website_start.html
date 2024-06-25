@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZM Dance Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f9f9f9;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2, p {
+            text-align: center;
+            color: #333;
+        }
+        p {
+            font-weight: 600;
+            background-color: #ffcccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .progress-container, .difficulty-container {
+            position: relative;
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-bar, .difficulty-bar {
+            height: 20px;
+        }
+        .progress-bar {
+            background-color: #76c7c0;
+            width: 0;
+        }
+        .difficulty-bar {
+            background-color: #ffcc00;
+            width: 0;
+        }
+        .progress-text, .difficulty-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            top: 0;
+            left: 0;
+            height: 20px;
+            line-height: 20px;
+            color: black;
+        }
+        .location-details {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .toggle-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>ZM Dance</h1>
+    <p>Announcement: Rumba lesson on 06/30 will be cancelled.</p>
+    <h2>Course Schedule</h2>
+    <button class="toggle-button" onclick="toggleSchedule()">Show Kid Lessons</button>
+    <table id="schedule-table">
+        <tr>
+            <th>Day</th>
+            <th>Time</th>
+            <th>Course</th>
+            <th>Difficulty</th>
+            <th>Duration</th>
+            <th>Progress</th>
+            <th>Location</th>
+        </tr>
+    </table>
+    <div class="location-details">
+        <h3>Studio Locations</h3>
+        <ul>
+            <li>Newton: 101 Union St, Newton, MA</li>
+            <li>Brighton: Star Dance School, 323 Washington Street, Brighton, MA</li>
+        </ul>
+    </div>
+    <script>
+        let showAdult = true;
+
+        function toggleSchedule() {
+            showAdult = !showAdult;
+            document.querySelector('.toggle-button').textContent = showAdult ? 'Show Kid Lessons' : 'Show Adult Lessons';
+            populateTable('schedule-table', showAdult ? 'schedule_adult.json' : 'schedule_kid.json');
+        }
+
+        function calculateProgress(startDate, endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const now = new Date();
+            const totalWeeks = Math.floor((end - start) / (1000 * 60 * 60 * 24 * 7));
+            const weeksPassed = Math.floor((now - start) / (1000 * 60 * 60 * 24 * 7));
+            return {
+                weeksPassed: Math.max(0, Math.min(totalWeeks, weeksPassed)),
+                totalWeeks: totalWeeks
+            };
+        }
+
+        function getDifficultyPercentage(difficulty) {
+            switch (difficulty.toLowerCase()) {
+                case 'intro':
+                    return 0;
+                case 'intermediate':
+                    return 50;
+                case 'advanced':
+                    return 100;
+                default:
+                    return 0;
+            }
+        }
+
+        function populateTable(tableId, jsonFile) {
+            fetch(jsonFile)
+            .then(response => response.json())
+            .then(data => {
+                const table = document.getElementById(tableId);
+                table.querySelectorAll('tr:not(:first-child)').forEach(row => row.remove());
+                data.forEach(course => {
+                    const duration = `${course.startDate} to ${course.endDate}`;
+                    const progressData = calculateProgress(course.startDate, course.endDate);
+                    const progress = `${progressData.weeksPassed} / ${progressData.totalWeeks} weeks`;
+                    const progressBarWidth = (progressData.weeksPassed / progressData.totalWeeks) * 100;
+                    const difficultyPercentage = getDifficultyPercentage(course.difficulty);
+                    const row = table.insertRow();
+                    row.innerHTML = `
+                        <td>${course.day}</td>
+                        <td>${course.time}</td>
+                        <td><a href="${course.syllabusPage}" target="_blank">${course.course}</a></td>
+                        <td>
+                            <div class="difficulty-container">
+                                <div class="difficulty-bar" style="width: ${difficultyPercentage}%;"></div>
+                                <div class="difficulty-text">${course.difficulty}</div>
+                            </div>
+                        </td>
+                        <td>${duration}</td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: ${progressBarWidth}%;"></div>
+                                <div class="progress-text">${progress}</div>
+                            </div>
+                        </td>
+                        <td>${course.location}</td>
+                    `;
+                });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // Initial population of the table with adult schedule
+        populateTable('schedule-table', 'schedule_adult.json');
+    </script>
+</body>
+</html>
